@@ -1,9 +1,11 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Formik } from "formik";
-import SignForm from "./SignForm";
 import * as yup from 'yup';
+import {useSignIn} from "../hooks/useSignIn";
 import theme from "../theme";
+import SignForm from "./SignForm";
+
 
 const styles = StyleSheet.create({
   formContainer: {
@@ -27,9 +29,19 @@ const initialValues = {
 
 
 const SignIn = () => {
-  const onSubmit = (values) => {
-    console.log(values);
+  const [signIn] = useSignIn();
+
+  const onSubmit = async (values) => {
+    const { username, password } = values;
+
+    try {
+      const { data } = await signIn({ username, password });
+      console.log(data);
+    } catch (e) {
+      console.log(e);
+    }
   };
+
   return (
     <View style={styles.formContainer}>
       <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={validationSchema}>
