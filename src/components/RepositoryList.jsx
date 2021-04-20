@@ -56,6 +56,7 @@ const RepositoryList = () => {
         data = useRepositories("RATING_AVERAGE", "ASC");
         break;
       default:
+        // eslint-disable-next-line no-unused-vars
         data = useRepositories();
     }
 
