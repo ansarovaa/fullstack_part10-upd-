@@ -13,12 +13,13 @@ const styles = StyleSheet.create({
 
 const ItemSeparator = () => <View style={styles.separator} />;
 
-const formatNumbers = (num) => {
+export const formatNumbers = (num) => {
   return num > 999 ? (num / 1000).toFixed(1) + "k" : num;
 };
 
 const renderItem = ({ item }) => (
   <RepositoryItem
+  id={item.id}
     fullName={item.fullName}
     description={item.description}
     language={item.language}
