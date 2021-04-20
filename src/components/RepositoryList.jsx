@@ -2,11 +2,15 @@ import React from 'react';
 import { FlatList, View, StyleSheet} from 'react-native';
 import RepositoryItem from './RepositoryItem';
 import useRepositories from '../hooks/useRepositories';
+import Dropdown from "./Dropdown";
 
 const styles = StyleSheet.create({
   separator: {
     height: 10,
-  }
+  },
+  listHeader: {
+    zIndex: 10,
+  },
 });
 
 
@@ -37,12 +41,34 @@ const RepositoryList = () => {
   const repositoryNodes = repositories
     ? repositories?.edges.map((edge) => edge.node)
     : [];
+    const [sort, setSort] = React.useState();
+
+    let data;
+  
+    switch (sort) {
+      case "Latest repositories":
+        data = useRepositories("CREATED_AT", "DESC");
+        break;
+      case "Highest rated repositories":
+        data = useRepositories("RATING_AVERAGE", "DESC");
+        break;
+      case "Lowest rated repositories":
+        data = useRepositories("RATING_AVERAGE", "ASC");
+        break;
+      default:
+        data = useRepositories();
+    }
+
+  
+    const onPress = (value) => setSort(value);
   return (
     <FlatList
       data={repositoryNodes}
       ItemSeparatorComponent={ItemSeparator}
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
+      ListHeaderComponent={() => <Dropdown onPress={onPress} sort={sort} />}
+      ListHeaderComponentStyle={styles.listHeader}
     />
   );
 };
