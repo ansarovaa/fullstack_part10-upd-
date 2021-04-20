@@ -1,9 +1,18 @@
 import { useQuery } from "@apollo/react-hooks";
 import React from "react";
+import { FlatList, StyleSheet, View } from "react-native";
 import { useParams } from "react-router-native";
 import { GET_REPOSITORY } from "../graphql/queries";
-import RepositoryItem from "./RepositoryItem";
-import { formatNumbers } from "./RepositoryList";
+import RepositoryInfo from "./RepositoryInfo";
+import ReviewItem from "./ReviewItem";
+
+const styles = StyleSheet.create({
+  separator: {
+    height: 10,
+  },
+});
+
+const ItemSeparator = () => <View style={styles.separator} />;
 
 const Repository = () => {
   const { id } = useParams();
@@ -12,21 +21,18 @@ const Repository = () => {
     variables: { id },
   });
 
+  const repository = data?.repository;
+  const reviews = data?.repository.reviews.edges;
+
   if (loading) return null;
 
   return (
-    <RepositoryItem
-      id={id}
-      fullName={data?.repository.fullName}
-      description={data?.repository.description}
-      language={data?.repository.language}
-      forksCount={formatNumbers(data?.repository.forksCount)}
-      stars={formatNumbers(data?.repository.stargazersCount)}
-      ratingAverage={formatNumbers(data?.repository.ratingAverage)}
-      reviewCount={formatNumbers(data?.repository.reviewCount)}
-      avatar={data?.repository.ownerAvatarUrl}
-      url={data?.repository.url}
-      detailView
+    <FlatList
+      data={reviews}
+      renderItem={({ item }) => <ReviewItem review={item} />}
+      keyExtractor={({ node: { id } }) => id}
+      ListHeaderComponent={() => <RepositoryInfo repository={repository} />}
+      ItemSeparatorComponent={ItemSeparator}
     />
   );
 };
